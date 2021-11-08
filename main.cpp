@@ -557,17 +557,14 @@ void Teacher :: studentResults() {              // Teacher able to see Marks of 
 
 void Question :: setQuestion() {                            // Setting Question
     fflush(stdin);
-    // strcpy(question, "hello");
-    gets(question);                                          // Inputting Question
+    cin.getline(question, 150);
     for (int i = 0; i < 4; i++) {
         fflush(stdin);
         cout << "Enter Option " << i + 1 << " : ";
-        gets(option[i]);
-        // strcpy(option[i], "option");                        // Inputting 4 options
+        cin.getline(option[i], 75);
     }
     cout << "Enter Correct answer: ";
     cin >> correctAns;                                   // Inputting Correct Answer
-    // correctAns = 1;
 
     return;
 }
