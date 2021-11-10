@@ -10,29 +10,55 @@
 using namespace std;
 
 class User {
-   public:                                             // User Class
+   private:                                             // User Class
     char username[25];
     char password[25];
     char name[25];
+    public:
+        void setUsername(char username[]){
+            strcpy(this->username, username);
+        };
+        void setPassword(char password[]){
+            strcpy(this->password, password);
+        };
+        void setName(char name[]){
+            strcpy(this->name, name);
+        };
+        char *getUsername() { return username; }
+        char *getPassword() { return password; }
 };
 
 class Student : public User {
-   public:
+   private:
     int rollNo;                                        // Student Class Inherited from User
     int cls;
     char sec;
     int marks[5];
-    Student() {
-        for (int i = 0; i < 5; i++) marks[i] = INT_MIN;
-    }
-    void studentPage();
-    void showProfile();
-    void selectPaper();
-    void checkProgress();
+    public:
+        Student(){};
+        Student(char username[], char password[], char name[], int rollNo, int cls, char sec) {
+            setUsername(username);
+            setPassword(password);
+            setName(name);
+            this->cls = cls;
+            this->rollNo = rollNo;
+            this->sec = sec;
+            for (int i = 0; i < 5; i++) marks[i] = INT_MIN;
+        }
+        void studentPage();
+        void showProfile();
+        void selectPaper();
+        void checkProgress();
 };
 
 class Teacher : public User {
    public:
+    Teacher(){};
+    Teacher(char username[], char password[], char name[]){
+         setUsername(username);
+         setPassword(password);
+         setName(name);
+    }
     void teacherPage();                                // Teacher Class Inherited from User
     void makePaper();
     void selectPaper();
@@ -104,14 +130,9 @@ void frontPage() {                           // Function to Display Front Page
     
     system("cls");
     readFile();                         // Reads file when program starts
-
-    // for (int i = 0; i < teachers.size(); i++)
-    //     cout << teachers[i].username << " " << teachers[i].password << endl;
     
     while (true) {
         system("cls");
-        cout << students.size() << " " << teachers.size() << " "
-             << questionpapers.size() << endl;
         cout << "1. Login" << endl;
         cout << "2. Sign Up" << endl;
         cout << "3. Exit" << endl;
@@ -192,24 +213,23 @@ void loginPage() {
 
 void stuSignUp() {                                        // Student Sign Up Page
     system("cls");
-    Student s;
-    ifstream fin;
-    fin.open("Student.txt", ios::in);
+    char name[25], password[25], username[25], sec;
+    int rollNo, cls;
     cout << "Input exit to Go to Front Page" << endl;
     cout << "Enter Your Name: ";                          // Getting Student Details
-    cin >> s.name;
-    if (strcmp(s.name, "exit") == 0)
+    cin >> name;
+    if (strcmp(name, "exit") == 0)
             return;
     cout << "Enter Roll Number: ";
-    cin >> s.rollNo;
+    cin >> rollNo;
     bool userNameTaken;
 
     do {
         userNameTaken = false;
         cout << "Create User Name: ";
-        cin >> s.username;
+        cin >> username;
         for (int i = 0; i < students.size(); i++) {
-            if (strcmp(students[i].username, s.username) == 0) {   // Checking if entered username is already present
+            if (strcmp(students[i].getUsername(), username) == 0) {   // Checking if entered username is already present
                 cout << "Entered Username is already taken, please choose another" << endl;                
                 Sleep(1000);                
                 userNameTaken = true;
@@ -219,14 +239,13 @@ void stuSignUp() {                                        // Student Sign Up Pag
     } while (userNameTaken);
 
     cout << "Create Password: ";
-    cin >> s.password;
+    cin >> password;
     cout << "Enter Class: ";
-    cin >> s.cls;
+    cin >> cls;
     cout << "Enter Section: ";
-    cin >> s.sec;
-    
+    cin >> sec;
+    Student s(username, password, name, rollNo, cls, sec);
     writeFile(s);                                       // Appending Object Data to File
-    return;
 }
 
 void stuLogin() {                                        // Student Login Page
@@ -246,8 +265,8 @@ void stuLogin() {                                        // Student Login Page
         cin >> password;
 
         for (int i = 0; i < students.size(); i++) {
-            if (students[i].username == userid &&           // Matching Username and Password
-                students[i].password == password) {
+            if (students[i].getUsername() == userid &&           // Matching Username and Password
+                students[i].getPassword() == password) {
                 cout << "Login Successful!" << endl;
                 Sleep(1000);
                 currentStudent = i;
@@ -266,7 +285,7 @@ void stuLogin() {                                        // Student Login Page
     system("cls");
     Loading();
 
-    cout << "Welcome " << students[currentStudent].name << endl;
+    cout << "Welcome " << students[currentStudent].getUsername() << endl;
     Sleep(1000);
     students[currentStudent].studentPage();
     return;
@@ -274,14 +293,11 @@ void stuLogin() {                                        // Student Login Page
 
 void tchSignUp() {                                      // Teacher Sign Up Page
     system("cls");
-    Teacher t;
-    ifstream fin;
-    fin.open("Teacher.txt", ios::in);
+    char name[25], password[25], username[25];
     cout << "Input exit to Go to Front Page" << endl;
     cout << "Enter Your Name: ";                        // Getting Teacher Details
-    cin >> t.name;
-    if (strcmp(t.name, "exit") == 0){
-        cout << "gsdfasdf";
+    cin >> name;
+    if (strcmp(name, "exit") == 0){
         return;
     }
 
@@ -289,9 +305,9 @@ void tchSignUp() {                                      // Teacher Sign Up Page
     do {
         userNameTaken = false;
         cout << "Create User Name: ";
-        cin >> t.username;
+        cin >> username;
         for (int i = 0; i < teachers.size(); i++) {
-            if (strcmp(teachers[i].username, t.username) == 0) {    // Checking if entered username is already present
+            if (strcmp(teachers[i].getUsername(), username) == 0) {    // Checking if entered username is already present
                 cout << "Entered Username is already taken, please choose another" << endl;
                 Sleep(1000);
                 userNameTaken = true;
@@ -301,10 +317,10 @@ void tchSignUp() {                                      // Teacher Sign Up Page
     } while (userNameTaken);
 
     cout << "Create Password: ";
-    cin >> t.password;
+    cin >> password;
+    Teacher t(username, password, name);
 
     writeFile(t);                                       // Appending Object Data to File
-    return;
 }
 
 void tchLogin() {                                       // Teacher Login Page
@@ -323,8 +339,8 @@ void tchLogin() {                                       // Teacher Login Page
         cout << "Enter Password: ";
         cin >> password;
         for (int i = 0; i < teachers.size(); i++) {
-            if (teachers[i].username == userid &&
-                teachers[i].password == password) {                // Matching Username and Password
+            if (teachers[i].getUsername() == userid &&
+                teachers[i].getPassword() == password) {                // Matching Username and Password
                 cout << "Login Successful!" << endl;
                 Sleep(1000);
                 currentTeacher = i;
@@ -343,7 +359,7 @@ void tchLogin() {                                       // Teacher Login Page
     system("cls");
     Loading();
 
-    cout << "Welcome " << teachers[currentTeacher].name << endl;
+    cout << "Welcome " << teachers[currentTeacher].getUsername() << endl;
     Sleep(1000);
     teachers[currentTeacher].teacherPage();
     return;
@@ -381,7 +397,7 @@ void Student :: studentPage() {                          // Student Page
 }
 
 void Student :: showProfile() {                   // Shows Detailed Profile of Student
-    cout << "Name    : " << name << endl;
+    cout << "Name    : " << getUsername() << endl;
     cout << "Roll No : " << rollNo << endl;
     cout << "Class   : " << cls << endl;
     cout << "Section : " << sec << endl;
@@ -457,7 +473,7 @@ void Teacher :: teacherPage() {                          // Teacher Page
     
     while (true) {
         system("cls");
-        cout << "Name    : " << name << endl;
+        cout << "Name    : " << getUsername() << endl;
         cout << "1. See Papers" << endl;
         cout << "2. Create Paper" << endl;
         cout << "3. See Students Progress" << endl;
